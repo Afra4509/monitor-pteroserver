@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     if (resultText) {
       try {
         result = JSON.parse(resultText);
-      } catch (e) {
+      } catch {
         console.error("[Pterodactyl Proxy] Failed to parse JSON:", resultText);
         // If it's not JSON but it failed, we create an error object
         if (!response.ok) {

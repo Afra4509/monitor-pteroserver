@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getDb, initDb } from "@/lib/db";
-import { jwtVerify } from "jose";
 
 export async function GET(request: Request) {
   try {

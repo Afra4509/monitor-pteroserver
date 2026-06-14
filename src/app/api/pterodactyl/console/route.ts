@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     if (!json.data) throw new Error("No data in response");
     token = json.data.token;
     socket = json.data.socket;
-  } catch (e) {
+  } catch {
     return new NextResponse("Failed to fetch WS credentials", { status: 500 });
   }
 
@@ -62,17 +62,17 @@ export async function GET(req: NextRequest) {
           if (parsed.event === "auth success") {
             ws.send(JSON.stringify({ event: "send logs", args: [null] }));
           }
-        } catch (e) {}
+        } catch {}
       });
 
       ws.on("close", () => {
         controller.enqueue(`data: ${JSON.stringify({ event: "proxy_disconnected" })}\n\n`);
-        try { controller.close(); } catch(e) {}
+        try { controller.close(); } catch {}
       });
 
       ws.on("error", (err) => {
         controller.enqueue(`data: ${JSON.stringify({ event: "proxy_error", args: [err.message] })}\n\n`);
-        try { controller.close(); } catch(e) {}
+        try { controller.close(); } catch {}
       });
 
       // Cleanup when client disconnects

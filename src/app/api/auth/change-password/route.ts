@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       const db = getDb();
       
       const [rows] = await db.query('SELECT password FROM users WHERE username = ?', ['admin']);
-      const users = rows as any[];
+      const users = rows as { password?: string }[];
       
       if (users.length > 0 && users[0].password === currentPassword) {
         isValidOld = true;

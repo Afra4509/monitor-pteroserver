@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       await initDb();
       const db = getDb();
       const [blockRows] = await db.query('SELECT * FROM ip_blocks WHERE ip = ?', [ip]);
-      blockRecord = (blockRows as any[])[0];
+      blockRecord = (blockRows as { is_banned: boolean, block_expires: string | Date, failed_attempts: number }[])[0];
 
       if (blockRecord) {
         if (blockRecord.is_banned) {
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
     try {
       const [rows] = await db.query('SELECT password FROM users WHERE username = ?', ['admin']);
-      const users = rows as any[];
+      const users = rows as { password?: string }[];
       
       if (users.length > 0 && users[0].password === password) {
         isValid = true;
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
         const db = getDb();
         await db.query('DELETE FROM ip_blocks WHERE ip = ?', [ip]);
       }
-    } catch (dbError) {}
+    } catch {}
 
     // Create JWT Session Cookie
     const secret = new TextEncoder().encode(process.env.JWT_SECRET || "fallback_secret_key");

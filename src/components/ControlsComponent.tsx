@@ -21,7 +21,7 @@ export function ControlsComponent() {
       } else {
         toast.error(`Failed to send ${action} command.`);
       }
-    } catch (e) {
+    } catch {
       toast.error(`Error sending command.`);
     }
   };

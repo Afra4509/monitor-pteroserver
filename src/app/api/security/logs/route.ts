@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     
     // Get total visitors count
     const [totalRows] = await db.query('SELECT COUNT(DISTINCT ip) as total FROM visitor_logs');
-    const total = (totalRows as any[])[0].total;
+    const total = (totalRows as { total: number }[])[0].total;
 
     return NextResponse.json({ logs: rows, totalUniqueVisitors: total });
   } catch (error) {

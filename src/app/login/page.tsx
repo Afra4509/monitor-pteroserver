@@ -58,8 +58,8 @@ export default function LoginPage() {
         toast.error("Access Denied", { description: data.error || "Incorrect password" });
         setPassword("");
       }
-    } catch (err) {
-      toast.error("Network Error", { description: "Could not connect to authentication server." });
+    } catch {
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -37,7 +37,7 @@ export default async function RootLayout({
     await initDb();
     const db = getDb();
     const [rows] = await db.query('SELECT * FROM ip_blocks WHERE ip = ?', [ip]);
-    const record = (rows as any[])[0];
+    const record = (rows as { is_banned: boolean, block_expires: string | Date }[])[0];
 
     if (record) {
       if (record.is_banned) {
@@ -48,7 +48,7 @@ export default async function RootLayout({
         blockMessage = "You have been temporarily timed out due to multiple failed login attempts. Please try again in 24 hours.";
       }
     }
-  } catch (error) {
+  } catch {
     // Gunakan console.warn agar tidak memunculkan popup error merah muda di layar Next.js
     console.warn("[Shield] Database is offline, IP protection skipped.");
   }

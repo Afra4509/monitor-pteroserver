@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Activity, Cpu, HardDrive, MemoryStick, Network, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { Activity, Cpu, HardDrive, MemoryStick, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
 import { Progress } from "./ui/progress";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 

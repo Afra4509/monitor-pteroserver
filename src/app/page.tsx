@@ -1,103 +1,115 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState } from "react";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { MobileNav } from "@/components/layout/MobileNav";
+import { Header } from "@/components/layout/Header";
+import { TerminalComponent } from "@/components/TerminalComponent";
+import { ServerControls } from "@/components/dashboard/ServerControls";
+import { AnalyticsGrid } from "@/components/dashboard/AnalyticsGrid";
+import { QuickStats } from "@/components/dashboard/QuickStats";
+import { ActivityLogs } from "@/components/dashboard/ActivityLogs";
+import { DatabasesModule } from "@/components/dashboard/DatabasesModule";
+import { SettingsModule } from "@/components/dashboard/SettingsModule";
+import { SecurityModule } from "@/components/dashboard/SecurityModule";
+import { useServerStats } from "@/hooks/useServerStats";
+import { Toaster } from "sonner";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { stats, history } = useServerStats();
+  const [activeView, setActiveView] = useState("Overview");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  // Track Visit and Leave
+  React.useEffect(() => {
+    fetch('/api/security/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'enter', path: '/' })
+    }).catch(console.error);
+
+    const handleBeforeUnload = () => {
+      navigator.sendBeacon('/api/security/track', JSON.stringify({ action: 'leave', path: '/' }));
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  return (
+    <div suppressHydrationWarning className="min-h-screen bg-[#000000] text-slate-300 flex font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+      <Sidebar activeView={activeView} setActiveView={setActiveView} />
+      
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none" />
+
+        <Header serverState={stats?.state || "offline"} setActiveView={setActiveView} />
+        
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 custom-scrollbar relative z-10 pb-24 lg:pb-8">
+          <div className="max-w-[1800px] mx-auto">
+            
+            {activeView === "Overview" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <QuickStats 
+                  cpu={stats?.cpu || 0} ram={stats?.ram || 0} disk={stats?.disk || 0} 
+                  netInStr={stats?.netInStr || "0 B/s"} netOutStr={stats?.netOutStr || "0 B/s"} 
+                  uptime={stats?.uptime || "0s"} state={stats?.state || "offline"} 
+                />
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+                  <div className="xl:col-span-8 flex flex-col gap-6">
+                    <ServerControls />
+                    <AnalyticsGrid history={history || []} />
+                  </div>
+                  <div className="xl:col-span-4 flex flex-col gap-6">
+                    <ActivityLogs />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeView === "Console" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 h-full flex flex-col gap-4">
+                <div className="h-[55vh] md:h-[60vh] lg:h-[650px] w-full min-h-[400px]">
+                  <TerminalComponent />
+                </div>
+                <ServerControls />
+              </div>
+            )}
+
+            {activeView === "Network" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <AnalyticsGrid history={history || []} />
+              </div>
+            )}
+
+            {activeView === "Databases" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <DatabasesModule />
+              </div>
+            )}
+
+            {activeView === "Settings" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <SettingsModule />
+              </div>
+            )}
+
+            {activeView === "Security" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <SecurityModule />
+              </div>
+            )}
+
+          </div>
+        </main>
+      </div>
+
+      <MobileNav activeView={activeView} setActiveView={setActiveView} />
+
+      <Toaster theme="dark" position="bottom-right" toastOptions={{
+        className: 'bg-[#0a0a0a] border border-white/10 text-white backdrop-blur-xl',
+        descriptionClassName: 'text-slate-400'
+      }} />
     </div>
   );
 }

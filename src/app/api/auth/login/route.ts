@@ -33,6 +33,7 @@ export async function POST(request: Request) {
     let isValid = false;
 
     try {
+      const db = getDb();
       const [rows] = await db.query('SELECT password FROM users WHERE username = ?', ['admin']);
       const users = rows as { password?: string }[];
       

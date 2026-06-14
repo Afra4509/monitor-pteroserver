@@ -25,7 +25,7 @@ export function TerminalComponent() {
       // Async imports take time. React StrictMode unmounts and remounts instantly.
       const { Terminal } = await import("@xterm/xterm");
       const { FitAddon } = await import("@xterm/addon-fit");
-      // @ts-ignore: TypeScript cannot resolve CSS module types natively here
+      // @ts-expect-error: TypeScript cannot resolve CSS module types natively here
       await import("@xterm/xterm/css/xterm.css");
 
       // CRITICAL FIX: If the component was unmounted while we were waiting for the imports,
@@ -153,7 +153,8 @@ export function TerminalComponent() {
       if (resizeObserver) resizeObserver.disconnect();
       if (eventSource) eventSource.close();
       window.removeEventListener("export-terminal-logs", handleExportLogs);
-      cleanup.then(clean => clean?.());
+      // initTerminal does not return a cleanup function, so we just await the promise
+      cleanup.catch(console.error);
       if (xtermInstance.current) {
         xtermInstance.current.dispose();
       }
